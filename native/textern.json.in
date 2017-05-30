@@ -1,0 +1,7 @@
+{
+    "name": "textern",
+    "description": "Edit text with an external editor.",
+    "path": "@@NATIVE_PATH@@",
+    "type": "stdio",
+    "allowed_extensions": [ "textern@jlebon.com" ]
+}

@@ -1,0 +1,6 @@
+Will need to use Native Messaging:
+https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging
+
+Will need to use the commands API to register the hotkey:
+https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/commands
+https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/commands

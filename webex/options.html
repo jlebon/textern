@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- vim: set et ts=4 tw=92: -->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://browser/content/extension.css">
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <form>
+      <label for="editor">External editor</label>
+      <input type="text" id="editor" required=true
+             pattern='\[ *"[^"]*"(, *"[^"]*")* *\]'
+             title='Must be in the form: ["executable", "arg", "arg", ...]'>
+      <label for="extension">Document extension</label>
+      <input type="text" id="extension" required=true pattern="[.a-zA-Z0-9_-]+"
+             title='Must be an alphanumerical string (excluding leading dot)'>
+      <button type="submit">Save</button><span id="saved"></span>
+    </form>
+    <script src="options.js" charset="utf-8"></script>
+  </body>
+</html>
