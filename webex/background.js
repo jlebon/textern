@@ -61,7 +61,7 @@ function handleNativeMessage(msg) {
 function notifyError(error) {
     browser.notifications.create({
         type: "basic",
-        title: "Extext",
+        title: "Textern",
         message: "Error: " + error + "."
     });
 }
