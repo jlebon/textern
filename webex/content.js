@@ -69,7 +69,7 @@ function setText(id, text) {
 }
 
 function onMessage(message, sender, respond) {
-    if (sender.id != "49825343-a2eb-4b22-a577-51b49a52ff8d")
+    if (sender.id != "textern@jlebon.com")
         return;
     if (message.type == "get_text")
         getText(respond);
