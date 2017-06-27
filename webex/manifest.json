@@ -3,7 +3,7 @@
   "description": "Edit text in your favourite external editor!",
   "homepage_url": "https://github.com/jlebon/textern",
   "manifest_version": 2,
-  "version": "0.2",
+  "version": "0.3",
 
   "applications": {
     "gecko": {
