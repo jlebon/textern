@@ -12,8 +12,8 @@ planned to be supported beyond
 
 The add-on is divided into two parts:
 
-- the WebExtension, which is planned to be added to
-  [AMO](https://addons.mozilla.org/), and
+- the WebExtension, which is available from AMO [here](https://addons.mozilla.org/addon/textern/), and
+
 - the native application, which handles text editor
   launching and monitoring.
 
