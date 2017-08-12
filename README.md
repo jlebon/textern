@@ -22,6 +22,18 @@ welcome!
 
 ## Installation
 
+To clone the repository:
+
+```
+$ git clone --recurse-submodules https://github.com/jlebon/textern
+$ cd textern
+```
+
+IMPORTANT: make sure that your git checkout includes
+submodules (either use the `--recurse-submodules` when
+running `git clone` as shown above, or use
+`git submodule update --init` if already cloned).
+
 To install the native app, run:
 
 ```
