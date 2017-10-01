@@ -24,6 +24,7 @@ import shutil
 import struct
 import asyncio
 import tempfile
+import urllib.parse
 from inotify_simple.inotify_simple import INotify, flags
 
 
@@ -39,8 +40,11 @@ class TmpManager():
     def __exit__(self, exc_type, exc_val, exc_tb):
         shutil.rmtree(self.tmpdir)
 
-    def new(self, text, ext, opaque):
-        f, absfn = tempfile.mkstemp(dir=self.tmpdir, suffix=("." + ext))
+    def new(self, text, url, extension, opaque):
+        sanitized_url = urllib.parse.quote(url, safe='')
+        f, absfn = tempfile.mkstemp(dir=self.tmpdir,
+                                    prefix=(sanitized_url + '-'),
+                                    suffix=("." + extension))
         # this itself will cause a harmless inotify event, though as a cool
         # side effect, we get an initial highlighting of the text area which is
         # nice feedback that the command was received
@@ -109,7 +113,8 @@ async def handle_message(tmp_mgr, msg):
 
 
 async def handle_message_new_text(tmp_mgr, msg):
-    absfn = tmp_mgr.new(msg["text"], msg["prefs"]["extension"], msg["id"])
+    absfn = tmp_mgr.new(msg["text"], msg["url"],
+                        msg["prefs"]["extension"], msg["id"])
     editor_args = get_editor_args(msg["prefs"]["editor"], absfn)
     try:
         proc = await asyncio.create_subprocess_exec(

@@ -81,7 +81,7 @@ function unregisterDoc(id) {
     }
 }
 
-function registerDoc(tid, eid, text) {
+function registerDoc(tid, eid, text, url) {
 
     var id = `${tid}_${eid}`;
     if (activeDocs.indexOf(id) != -1) {
@@ -105,6 +105,7 @@ function registerDoc(tid, eid, text) {
             payload: {
                 id: id,
                 text: text,
+                url: url,
                 prefs: {
                     editor: values[0].editor || "[\"gedit\"]",
                     extension: values[1].extension || "txt"
@@ -121,7 +122,7 @@ function onEdit() {
             if (response == undefined) {
                 notifyError("no text field selected");
             } else {
-                 registerDoc(tabs[0].id, response["id"], response["text"]);
+                 registerDoc(tabs[0].id, response["id"], response["text"], response["url"]);
             }
         }, logError);
     });

@@ -33,7 +33,9 @@ function getText(respond) {
     var e = document.activeElement;
     if (e.nodeName == "TEXTAREA") {
         var id = watchElement(e);
-        respond({id: id, text: e.value});
+        /* don't use href directly to not bring in e.g. url params */
+        var simple_url = window.location.hostname + window.location.pathname
+        respond({id: id, text: e.value, url: simple_url});
     }
 }
 
