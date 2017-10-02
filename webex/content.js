@@ -21,12 +21,45 @@
 
 var elements = new Map(); /* id --> e */
 
+function logError(error) {
+    console.log(`Error: ${error}`);
+}
+
+function assertNoResponse(response) {
+    console.assert(response == undefined);
+}
+
+function notifyError(error) {
+    browser.notifications.create({
+        type: "basic",
+        title: "Textern",
+        message: "Error: " + error + "."
+    });
+}
+
 function watchElement(e) {
     /* these are IDs we assign ourselves, unrelated to its DOM id */
     if (!("texternId" in e))
         e.texternId = elements.size;
     elements.set(e.texternId, e);
     return e.texternId;
+}
+
+function registerText() {
+    var e = document.activeElement;
+    if (e.nodeName == "TEXTAREA") {
+        var id = watchElement(e);
+        /* don't use href directly to not bring in e.g. url params */
+        var simple_url = window.location.hostname + window.location.pathname
+        browser.runtime.sendMessage("textern@jlebon.com", {
+            type: "register_text",
+            id: id,
+            text: e.value,
+            url: simple_url
+        }).then(assertNoResponse, logError);
+    } else {
+        notifyError("no text field selected");
+    }
 }
 
 function getText(respond) {
@@ -78,7 +111,24 @@ function onMessage(message, sender, respond) {
     else if (message.type == "set_text")
         setText(message.id, message.text);
     else
-        console.log(`Unknown type: ${message.type}`);
+        console.log(`Unknown message type: ${message.type}`);
 }
 
 browser.runtime.onMessage.addListener(onMessage);
+
+var currentShortcut = undefined;
+function registerShortcut() {
+    browser.storage.local.get({shortcut: "Ctrl+Shift+E"}).then(val => {
+        if (val.shortcut == currentShortcut)
+            return; /* no change */
+        shortcut.add(val.shortcut, registerText);
+        if (currentShortcut != undefined)
+            shortcut.remove(currentShortcut);
+        currentShortcut = val.shortcut;
+    });
+}
+
+registerShortcut();
+
+/* meh, we just re-apply the shortcut -- XXX: should check what actually changed */
+browser.storage.onChanged.addListener(registerShortcut);

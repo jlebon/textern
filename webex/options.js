@@ -27,6 +27,7 @@ function saveOptions(e) {
     e.preventDefault();
     browser.storage.local.set({
         editor: document.querySelector("#editor").value,
+        shortcut: document.querySelector("#shortcut").value,
         extension: document.querySelector("#extension").value
     });
     document.querySelector("#saved").innerHTML = '\u2713';
@@ -40,6 +41,10 @@ function restoreOptions() {
 
     browser.storage.local.get("editor").then(result => {
         document.querySelector("#editor").value = result.editor || "[\"gedit\"]";
+    }, onError);
+
+    browser.storage.local.get("shortcut").then(result => {
+        document.querySelector("#shortcut").value = result.shortcut || "Ctrl+Shift+E";
     }, onError);
 
     browser.storage.local.get("extension").then(result => {

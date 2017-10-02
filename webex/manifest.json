@@ -19,19 +19,12 @@
   "content_scripts": [
       {
           "matches": ["<all_urls>"],
-          "js": ["content.js"]
+          "js": ["shortcut.js", "content.js"]
       }
   ],
 
   "options_ui": {
       "page": "options.html"
-  },
-
-  "commands": {
-    "edit": {
-      "suggested_key": { "default": "Ctrl+Shift+E" },
-      "description": "Edit textbox in external editor"
-    }
   },
 
   "permissions": ["notifications", "nativeMessaging", "storage"]

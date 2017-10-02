@@ -31,8 +31,12 @@ function assertNoResponse(response) {
     console.assert(response == undefined);
 }
 
-function contentGetActiveText(tab) {
-    return browser.tabs.sendMessage(tab.id, {type: "get_text"});
+function notifyError(error) {
+    browser.notifications.create({
+        type: "basic",
+        title: "Textern",
+        message: "Error: " + error + "."
+    });
 }
 
 function contentSetActiveText(tid, eid, text) {
@@ -56,14 +60,6 @@ function handleNativeMessage(msg) {
     } else {
         console.log(`Unknown native message type: ${msg.type}`);
     }
-}
-
-function notifyError(error) {
-    browser.notifications.create({
-        type: "basic",
-        title: "Textern",
-        message: "Error: " + error + "."
-    });
 }
 
 function unregisterDoc(id) {
@@ -98,8 +94,10 @@ function registerDoc(tid, eid, text, url) {
         });
     }
 
-    Promise.all([browser.storage.local.get("editor"),
-                 browser.storage.local.get("extension")]).then(values => {
+    browser.storage.local.get({
+        editor: "[\"gedit\"]",
+        extension: "txt"
+    }).then(values => {
         port.postMessage({
             type: "new_text",
             payload: {
@@ -107,28 +105,26 @@ function registerDoc(tid, eid, text, url) {
                 text: text,
                 url: url,
                 prefs: {
-                    editor: values[0].editor || "[\"gedit\"]",
-                    extension: values[1].extension || "txt"
+                    editor: values.editor || "[\"gedit\"]",
+                    extension: values.extension || "txt"
                 }
             }
         });
     }, logError);
 }
 
-function onEdit() {
-    browser.tabs.query({currentWindow: true, active: true}).then(tabs => {
-        console.assert(tabs.length == 1);
-        contentGetActiveText(tabs[0]).then(response => {
-            if (response == undefined) {
-                notifyError("no text field selected");
-            } else {
-                 registerDoc(tabs[0].id, response["id"], response["text"], response["url"]);
-            }
-        }, logError);
-    });
+function handleRegisterText(tabId, message) {
+    registerDoc(tabId, message.id, message.text, message.url);
 }
 
-browser.commands.onCommand.addListener(function(command) {
-    if (command == "edit")
-        onEdit();
-});
+function onMessage(message, sender, respond) {
+    if (sender.id != "textern@jlebon.com")
+        return;
+    var tabId = sender.tab.id;
+    if (message.type == "register_text")
+        handleRegisterText(tabId, message);
+    else
+        console.log(`Unknown message type: ${message.type}`);
+}
+
+browser.runtime.onMessage.addListener(onMessage);
