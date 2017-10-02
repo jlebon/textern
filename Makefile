@@ -14,6 +14,7 @@ all:
 	@echo "No build step. Available targets:"
 	@echo "native-install          install native app"
 	@echo "native-uninstall        uninstall native app"
+	@echo "xpi                     create XPI webex archive"
 	@echo
 	@echo "Set USER=1 to target user directories instead."
 
@@ -33,3 +34,7 @@ native-install: native/textern.json
 native-uninstall:
 	rm -f $(MOZILLA_NATIVE)/textern.json
 	rm -rf $(LIBEXEC)/textern
+
+.PHONY: xpi
+xpi:
+	@rm -f textern.xpi && cd webex && zip -r -FS ../textern.xpi *
