@@ -76,3 +76,27 @@ set your editor in the preferences to something like:
 ```
 ["gnome-terminal-wrapper", "vim"]
 ```
+
+## Related Projects
+
+### It's All Text!
+
+https://github.com/docwhat/itsalltext/
+
+This is the project that inspired this add-on.
+Unfortunately, it is not compatible with WebExtensions and
+thus cannot be installed on Firefox 57 or later.
+
+### withExEditor
+
+https://github.com/asamuzaK/withExEditor
+
+Similar to Textern and supports WebExtensions. Native app is
+cross-platform but requires Node.js.
+
+### GhostText
+
+https://github.com/GhostText/GhostText
+
+Uses editor-specific plugins to provide two-way on-the-fly
+sync between webpage and editor.
