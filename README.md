@@ -97,6 +97,24 @@ and thus can be directly invoked, e.g.:
 ["konsole", "-e", "vim"]
 ```
 
+### GUI editors
+
+Non-terminal-based editors can also suffer from the same
+problem described above. For example, gedit does not fork
+and thus can be used directly:
+
+```
+["gedit"]
+```
+
+On the other hand, `gvim` by default will fork and detach.
+One must also make sure to pass the `-f` switch for it to
+stay in the foreground:
+
+```
+["gvim", "-f"]
+```
+
 ## Related Projects
 
 ### It's All Text!
