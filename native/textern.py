@@ -31,7 +31,12 @@ from inotify_simple.inotify_simple import INotify, flags
 class TmpManager():
 
     def __init__(self):
-        self.tmpdir = tempfile.mkdtemp(prefix="textern-")
+        try:
+            tmpdir_parent = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'textern')
+            os.makedirs(tmpdir_parent)
+        except:
+            tmpdir_parent = None
+        self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
 
     def __enter__(self):
