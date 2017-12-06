@@ -108,7 +108,7 @@ and thus can be used directly:
 ```
 
 On the other hand, `gvim` by default will fork and detach.
-One must also make sure to pass the `-f` switch for it to
+One must thus make sure to pass the `-f` switch for it to
 stay in the foreground:
 
 ```
