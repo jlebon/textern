@@ -70,6 +70,16 @@ will launch `myeditor --custom-arg /path/to/file.txt`. You
 may use `%s` as a variable for the file path if don't want
 it to be the last argument.
 
+If your editor supports it, you can also use `%l` and `%c`
+to pass the line and column number of the caret position.
+(The capitalized versions `%L` and `%C` also exist which are
+smaller by one for text editors that count from zero). For
+example, passing this information to `gvim` (or `vim`):
+
+```
+["gvim", "-f", "-c", "normal %lG%c|"]
+```
+
 ### gnome-terminal
 
 If you would like to use gnome-terminal to spawn a terminal

@@ -42,6 +42,7 @@ function registerText() {
             type: "register_text",
             id: id,
             text: e.value,
+            caret: e.selectionStart,
             url: simple_url
         }).then(assertNoResponse, logError);
     } else {

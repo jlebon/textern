@@ -64,7 +64,7 @@ function unregisterDoc(id) {
     }
 }
 
-function registerDoc(tid, eid, text, url) {
+function registerDoc(tid, eid, text, caret, url) {
 
     var id = `${tid}_${eid}`;
     if (activeDocs.indexOf(id) != -1) {
@@ -82,7 +82,7 @@ function registerDoc(tid, eid, text, url) {
     }
 
     browser.storage.local.get({
-        editor: "[\"gedit\"]",
+        editor: "[\"gedit\", \"+%l:%c\"]",
         extension: "txt"
     }).then(values => {
         port.postMessage({
@@ -90,10 +90,11 @@ function registerDoc(tid, eid, text, url) {
             payload: {
                 id: id,
                 text: text,
+                caret: caret,
                 url: url,
                 prefs: {
-                    editor: values.editor || "[\"gedit\"]",
-                    extension: values.extension || "txt"
+                    editor: values.editor,
+                    extension: values.extension
                 }
             }
         });
@@ -101,7 +102,7 @@ function registerDoc(tid, eid, text, url) {
 }
 
 function handleRegisterText(tabId, message) {
-    registerDoc(tabId, message.id, message.text, message.url);
+    registerDoc(tabId, message.id, message.text, message.caret, message.url);
 }
 
 function onMessage(message, sender, respond) {

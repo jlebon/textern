@@ -27,7 +27,8 @@ function clearCheckmark(e) {
 function restoreOptions() {
 
     browser.storage.local.get("editor").then(result => {
-        document.querySelector("#editor").value = result.editor || "[\"gedit\"]";
+        document.querySelector("#editor").value =
+            result.editor || "[\"gedit\", \"+%l:%c\"]";
     }, onError);
 
     browser.storage.local.get("shortcut").then(result => {

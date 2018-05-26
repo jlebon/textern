@@ -92,22 +92,52 @@ def handle_stdin(tmp_mgr):
     loop.create_task(handle_message(tmp_mgr, message))
 
 
-def get_editor_args(editor_args_str, absfn):
-    editor_args = json.loads(editor_args_str)
-    if "%s" not in editor_args:
-        editor_args.append("%s")
-    editor_args[editor_args.index("%s")] = absfn
-    return editor_args
+def get_final_editor_args(editor_args, absfn, line, column):
+    final_editor_args = []
+    fn_added = False
+    for arg in editor_args:
+        if '%s' in arg:
+            arg = arg.replace('%s', absfn)
+            fn_added = True
+        if '%l' in arg:
+            arg = arg.replace('%l', str(line+1))
+        if '%L' in arg:
+            arg = arg.replace('%L', str(line))
+        if '%c' in arg:
+            arg = arg.replace('%c', str(column+1))
+        if '%C' in arg:
+            arg = arg.replace('%C', str(column))
+        final_editor_args.append(arg)
+    if not fn_added:
+        final_editor_args.append(absfn)
+    return final_editor_args
 
 
 async def handle_message(tmp_mgr, msg):
     await message_handlers[msg["type"]](tmp_mgr, msg["payload"])
 
 
+def offset_to_line_and_column (text, offset):
+    offset = max(0, min(len(text), offset))
+    text = text[:offset]
+    l = text.count('\n')
+    if l == 0:
+        c = offset
+    else:
+        c = len(text[text.rindex('\n')+1:])
+    # NB: these are zero-based indexes
+    return l, c
+
 async def handle_message_new_text(tmp_mgr, msg):
+
+    # create a new tempfile for it
     absfn = tmp_mgr.new(msg["text"], msg["url"],
                         msg["prefs"]["extension"], msg["id"])
-    editor_args = get_editor_args(msg["prefs"]["editor"], absfn)
+
+    editor_args = json.loads(msg["prefs"]["editor"])
+    line, column = offset_to_line_and_column (msg["text"], msg["caret"])
+
+    editor_args = get_final_editor_args(editor_args, absfn, line, column)
     try:
         proc = await asyncio.create_subprocess_exec(
             *editor_args,
