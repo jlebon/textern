@@ -105,7 +105,7 @@ browser.runtime.onMessage.addListener(onMessage);
 
 var currentShortcut = undefined;
 function registerShortcut() {
-    browser.storage.local.get({shortcut: "Ctrl+Shift+E"}).then(val => {
+    browser.storage.local.get({shortcut: "Ctrl+Shift+D"}).then(val => {
         if (val.shortcut == currentShortcut)
             return; /* no change */
         shortcut.add(val.shortcut, registerText);

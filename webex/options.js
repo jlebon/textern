@@ -31,7 +31,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("shortcut").then(result => {
-        document.querySelector("#shortcut").value = result.shortcut || "Ctrl+Shift+E";
+        document.querySelector("#shortcut").value = result.shortcut || "Ctrl+Shift+D";
     }, onError);
 
     browser.storage.local.get("extension").then(result => {
