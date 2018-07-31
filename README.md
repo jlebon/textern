@@ -135,6 +135,14 @@ This is the project that inspired this add-on.
 Unfortunately, it is not compatible with WebExtensions and
 thus cannot be installed on Firefox 57 or later.
 
+### Tridactyl
+
+https://github.com/cmcaine/tridactyl
+
+Generic addon that adds Vim-like bindings to Firefox,
+including an `:editor` command which provides similar
+functionality to Textern.
+
 ### withExEditor
 
 https://github.com/asamuzaK/withExEditor
