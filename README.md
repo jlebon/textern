@@ -80,7 +80,25 @@ example, passing this information to `gvim` (or `vim`):
 ["gvim", "-f", "-c", "normal %lG%c|"]
 ```
 
-### gnome-terminal
+### command line only editors
+
+If you would like to use a command line only editor such as
+vim or emacs, you will need to modify the configuration such
+that textern starts a terminal emulator which runs the text
+editor.
+For example, for `nvim` this could look like
+
+```
+["xterm", "-e", "nvim", "+call cursor(%l,%c)"]
+```
+
+Here, `xterm` is the terminal emulator, `-e` instructs it to
+start a program, which is `nvim` (the editor we're actually
+interested in) with the given parameters.
+
+This works similarly with `konsole` instead of `xterm`.
+
+#### Notes on gnome-terminal
 
 If you would like to use gnome-terminal to spawn a terminal
 application like vim or emacs, note that you will need to
@@ -92,20 +110,16 @@ more information. You can work around this by using the
 script
 [here](https://github.com/jlebon/files/blob/master/bin/gnome-terminal-wrapper),
 and prepend your command. For example, to run vim, you can
-set your editor in the preferences to something like:
+set your editor in the preferences to something like
 
 ```
 ["gnome-terminal-wrapper", "vim"]
 ```
 
-### konsole
+and make sure, that `gnome-terminal-wrapper` is in your
+`PATH`.
 
-konsole doesn't suffer from the same issue as gnome-terminal
-and thus can be directly invoked, e.g.:
 
-```
-["konsole", "-e", "vim"]
-```
 
 ### GUI editors
 
