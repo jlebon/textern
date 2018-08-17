@@ -25,15 +25,15 @@ native/textern.json:
 
 .PHONY: native-install
 native-install: native/textern.json
-	mkdir -p $(MOZILLA_NATIVE)
-	cp -f native/textern.json $(MOZILLA_NATIVE)
-	mkdir -p $(LIBEXEC)/textern
-	cp -rf native/textern.py native/inotify_simple $(LIBEXEC)/textern
+	mkdir -p $(DESTDIR)$(MOZILLA_NATIVE)
+	cp -f native/textern.json $(DESTDIR)$(MOZILLA_NATIVE)
+	mkdir -p $(DESTDIR)$(LIBEXEC)/textern
+	cp -rf native/textern.py native/inotify_simple $(DESTDIR)$(LIBEXEC)/textern
 
 .PHONY: native-uninstall
 native-uninstall:
-	rm -f $(MOZILLA_NATIVE)/textern.json
-	rm -rf $(LIBEXEC)/textern
+	rm -f $(DESTDIR)$(MOZILLA_NATIVE)/textern.json
+	rm -rf $(DESTDIR)$(LIBEXEC)/textern
 
 .PHONY: xpi
 xpi:
