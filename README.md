@@ -77,16 +77,15 @@ smaller by one for text editors that count from zero). For
 example, passing this information to `gvim` (or `vim`):
 
 ```
-["gvim", "-f", "-c", "normal %lG%c|"]
+["gvim", "-f", "+call cursor(%l,%c)"]
 ```
 
-### command line only editors
+### Terminal editors
 
-If you would like to use a command line only editor such as
-vim or emacs, you will need to modify the configuration such
-that textern starts a terminal emulator which runs the text
-editor.
-For example, for `nvim` this could look like
+If you would like to use a terminal editor such as vim or
+emacs, you will need to modify the configuration such that
+Textern starts a terminal emulator which runs the text
+editor. For example, for `nvim` this could look like
 
 ```
 ["xterm", "-e", "nvim", "+call cursor(%l,%c)"]
@@ -101,10 +100,10 @@ This works similarly with `konsole` instead of `xterm`.
 #### Notes on gnome-terminal
 
 If you would like to use gnome-terminal to spawn a terminal
-application like vim or emacs, note that you will need to
-work around the fact that the gnome-terminal process
-*does not* wait for the spawned process before exiting. This
-will cause Textern to stop listening for text updates. See
+editor like vim or emacs, note that you will need to work
+around the fact that the gnome-terminal process *does not*
+wait for the spawned process before exiting. This will cause
+Textern to stop listening for text updates. See
 https://bugzilla.gnome.org/show_bug.cgi?id=707899#c4 for
 more information. You can work around this by using the
 script
@@ -118,8 +117,6 @@ set your editor in the preferences to something like
 
 and make sure, that `gnome-terminal-wrapper` is in your
 `PATH`.
-
-
 
 ### GUI editors
 
