@@ -24,10 +24,10 @@ native-install-system:
 	chmod o+rX $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM)
 	sed -e 's|@@NATIVE_PATH@@|$(TEXTERN_SYSTEM)/textern.py|' native/textern.json.in > $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM)/textern.json
 	chmod o+r $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM)/textern.json
-	#mkdir -p $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)
-	#chmod o+rX $(DESTDIR)$(MOZILLA64)
-	#chmod o+rX $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)
-	#ln -s $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM)/textern.json $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)/textern.json
+	@#mkdir -p $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)
+	@#chmod o+rX $(DESTDIR)$(MOZILLA64)
+	@#chmod o+rX $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)
+	@#ln -s $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM)/textern.json $(DESTDIR)$(MOZILLA_NATIVE_SYSTEM64)/textern.json
 
 	mkdir -p $(DESTDIR)$(TEXTERN_SYSTEM)
 	chmod o+rX $(DESTDIR)$(LIBEXEC_SYSTEM)
