@@ -39,6 +39,9 @@ class TmpManager():
         self._backupdir = ""
         self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
+        self._editors = {}  # absfn --> proc
+        self.kill_editors_allow = False
+        self.kill_editors_timeout = 0
 
     def __enter__(self):
         return self
@@ -96,6 +99,26 @@ class TmpManager():
         with open(os.path.join(self.tmpdir, relfn), encoding='utf-8') as f:
             return f.read(), self._tmpfiles[relfn]
 
+    def add_editor(self, absfn, proc):
+        relfn = os.path.basename(absfn)
+        assert relfn in self._tmpfiles
+        self._editors[absfn] = proc
+
+    def kill_editors_configure(self, allow, timeout):
+        self.kill_editors_allow = allow
+        self.kill_editors_timeout = timeout
+
+    def kill_editors(self):
+        """Terminate editors that aren't finished yet"""
+        if not self.kill_editors_allow or not self._editors:
+            return
+        for proc in self._editors.values():
+            proc.terminate()
+        time.sleep(self.kill_editors_timeout)
+        # Try harder
+        for proc in self._editors.values():
+            proc.kill()
+
 
 def main():
     with INotify() as ino, TmpManager() as tmp_mgr:
@@ -105,6 +128,7 @@ def main():
         loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
         loop.run_forever()
         loop.close()
+        tmp_mgr.kill_editors()
 
 
 def handle_stdin(tmp_mgr):
@@ -173,6 +197,11 @@ async def handle_message_new_text(tmp_mgr, msg):
     # for now, we get preferences as part of new_text updates; in the future, we
     # may add a `set_prefs` message dedicated to this
     tmp_mgr.update_backupdir(msg["prefs"].get("backupdir", ""))
+
+    tmp_mgr.kill_editors_configure(
+        msg["prefs"].get("kill_editors_allow", False),
+        msg["prefs"].get("kill_editors_timeout", 1))
+
     editor_args = json.loads(msg["prefs"]["editor"])
 
     line, column = offset_to_line_and_column(msg["text"], msg["caret"])
@@ -187,6 +216,7 @@ async def handle_message_new_text(tmp_mgr, msg):
     except FileNotFoundError:
         send_error("could not find editor '%s'" % editor_args[0])
     else:
+        tmp_mgr.add_editor(absfn, proc)
         await proc.wait()
         if proc.returncode != 0:
             send_error("editor '%s' did not exit successfully"
