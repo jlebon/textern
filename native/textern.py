@@ -178,6 +178,9 @@ async def handle_message_new_text(tmp_mgr, msg):
     line, column = offset_to_line_and_column(msg["text"], msg["caret"])
 
     editor_args = get_final_editor_args(editor_args, absfn, line, column)
+    if msg["prefs"].get("kill_editors_allow", False):
+        editor_args = ['setpriv', '--pdeathsig', 'SIGTERM'] + editor_args
+
     try:
         proc = await asyncio.create_subprocess_exec(
             *editor_args,
