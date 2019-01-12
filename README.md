@@ -16,7 +16,7 @@ The add-on is divided into two parts:
 - the native application, which handles text editor
   launching and monitoring.
 
-The native application currently only supports Linux with
+The native application currently supports Linux or macOS with
 Python 3.5. Patches to add support for other platforms are
 welcome!
 
@@ -52,6 +52,18 @@ the native app for the current user, run:
 ```
 $ make native-install USER=1
 ```
+
+
+### Note for macOS
+
+If you installed Python via [homebrew](https://brew.sh/), note
+that `/usr/local/bin` is *not* on the PATH by default, so
+`textern.py` cannot find it. You either need to adjust your
+PATH globally, the exact procedure for which seems to [change with
+each macOS version](https://stackoverflow.com/a/32902449/1885340),
+or edit the first line of `native/textern.py` to read
+`#!/usr/local/bin/python3` and repeating the `make native-install` call.
+
 
 ## Usage
 
@@ -117,6 +129,14 @@ set your editor in the preferences to something like
 
 and make sure, that `gnome-terminal-wrapper` is in your
 `PATH`.
+
+### Notes on the macOS Terminal.app
+
+As it operates similarly to gnome-terminal (described above),
+it has the same issue with exiting prematurely. An appropriate
+wrapper script can be found
+[here](https://gist.github.com/wosc/680f87845d0fd9d8b4a9e2f8c42f98a2)
+
 
 ### GUI editors
 
