@@ -1,10 +1,20 @@
+UNAME_S := $(shell uname -s)
+
 ifneq ($(USER),1)
 	PREFIX ?= /usr/local
-	MOZILLA_PREFIX ?= /usr
-	MOZILLA_NATIVE ?= $(MOZILLA_PREFIX)/lib64/mozilla/native-messaging-hosts
+	ifeq ($(UNAME_S),Darwin)
+		MOZILLA_NATIVE ?= /Library/Application\ Support/Mozilla/NativeMessagingHosts
+	else
+		MOZILLA_PREFIX ?= /usr
+		MOZILLA_NATIVE ?= $(MOZILLA_PREFIX)/lib64/mozilla/native-messaging-hosts
+	endif
 else
 	PREFIX ?= $(HOME)/.local
-	MOZILLA_NATIVE ?= $(HOME)/.mozilla/native-messaging-hosts
+	ifeq ($(UNAME_S),Darwin)
+		MOZILLA_NATIVE ?= $(HOME)/Library/Application\ Support/Mozilla/NativeMessagingHosts
+	else
+		MOZILLA_NATIVE ?= $(HOME)/.mozilla/native-messaging-hosts
+	endif
 endif
 
 LIBEXEC ?= $(PREFIX)/libexec
@@ -28,7 +38,7 @@ native-install: native/textern.json
 	mkdir -p $(DESTDIR)$(MOZILLA_NATIVE)
 	cp -f native/textern.json $(DESTDIR)$(MOZILLA_NATIVE)
 	mkdir -p $(DESTDIR)$(LIBEXEC)/textern
-	cp -rf native/textern.py native/inotify_simple $(DESTDIR)$(LIBEXEC)/textern
+	cp -rf native/textern.py native/watchgod $(DESTDIR)$(LIBEXEC)/textern
 
 .PHONY: native-uninstall
 native-uninstall:

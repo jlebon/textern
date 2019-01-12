@@ -12,14 +12,19 @@ import struct
 import asyncio
 import tempfile
 import urllib.parse
-from inotify_simple.inotify_simple import INotify, flags
+from watchgod.watchgod import awatch
+
+if sys.platform == 'darwin':
+    TMPDIR = os.environ['TMPDIR']
+else:
+    TMPDIR = os.environ['XDG_RUNTIME_DIR']
 
 
 class TmpManager():
 
     def __init__(self):
         try:
-            tmpdir_parent = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'textern')
+            tmpdir_parent = os.path.join(TMPDIR, 'textern')
             os.makedirs(tmpdir_parent)
         except:
             tmpdir_parent = None
@@ -63,11 +68,10 @@ class TmpManager():
 
 
 def main():
-    with INotify() as ino, TmpManager() as tmp_mgr:
-        ino.add_watch(tmp_mgr.tmpdir, flags.CLOSE_WRITE)
+    with TmpManager() as tmp_mgr:
         loop = asyncio.get_event_loop()
+        loop.create_task(watch_directory(tmp_mgr))
         loop.add_reader(sys.stdin.buffer, handle_stdin, tmp_mgr)
-        loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
         loop.run_forever()
         loop.close()
 
@@ -161,14 +165,16 @@ message_handlers = {
 }
 
 
-def handle_inotify_event(ino, tmp_mgr):
-    for event in ino.read():
-        # this check is relevant in the case where we're handling the inotify
-        # event caused by tmp_mgr.new(), but then an exception occurred in
-        # handle_message() which caused the tmpfile to already be deleted
-        if tmp_mgr.has(event.name):
-            text, id = tmp_mgr.get(event.name)
-            send_text_update(id, text)
+async def watch_directory(tmp_mgr):
+    async for changes in awatch(tmp_mgr.tmpdir):
+        for typ, path in changes:
+            path = os.path.basename(path)
+            # this check is relevant in the case where we're handling the
+            # event caused by tmp_mgr.new(), but then an exception occurred in
+            # handle_message() which caused the tmpfile to already be deleted
+            if tmp_mgr.has(path):
+                text, id = tmp_mgr.get(path)
+                send_text_update(id, text)
 
 
 def send_text_update(id, text):
