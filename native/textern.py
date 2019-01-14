@@ -35,6 +35,9 @@ class TmpManager():
     def __exit__(self, exc_type, exc_val, exc_tb):
         shutil.rmtree(self.tmpdir)
 
+    def __contains__(self, relfn):
+        return relfn in self._tmpfiles
+
     def new(self, text, url, extension, opaque):
         sanitized_url = urllib.parse.quote(url, safe='')
         f, absfn = tempfile.mkstemp(dir=self.tmpdir,
@@ -60,9 +63,6 @@ class TmpManager():
         assert relfn in self._tmpfiles
         with open(os.path.join(self.tmpdir, relfn), encoding='utf-8') as f:
             return f.read(), self._tmpfiles[relfn]
-
-    def has(self, relfn):
-        return relfn in self._tmpfiles
 
 
 def main():
@@ -170,7 +170,7 @@ def handle_inotify_event(ino, tmp_mgr):
         # this check is relevant in the case where we're handling the inotify
         # event caused by tmp_mgr.new(), but then an exception occurred in
         # handle_message() which caused the tmpfile to already be deleted
-        if tmp_mgr.has(event.name):
+        if event.name in tmp_mgr:
             text, id = tmp_mgr.get(event.name)
             send_text_update(id, text)
 
