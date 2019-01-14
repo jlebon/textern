@@ -2,6 +2,7 @@
 # vim: set et ts=4 tw=80:
 # This file is part of Textern.
 # Copyright (C) 2017-2018  Jonathan Lebon <jonathan@jlebon.com>
+# Copyright (C) 2018  Oleg Broytman <phd@phdru.name>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
@@ -19,9 +20,10 @@ class TmpManager():
 
     def __init__(self):
         try:
-            tmpdir_parent = os.path.join(os.environ['XDG_RUNTIME_DIR'], 'textern')
+            tmpdir_parent = os.path.join(
+                os.environ['XDG_RUNTIME_DIR'], 'textern')
             os.makedirs(tmpdir_parent)
-        except:
+        except (KeyError, OSError):
             tmpdir_parent = None
         self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
@@ -117,16 +119,17 @@ async def handle_message(tmp_mgr, msg):
     await message_handlers[msg["type"]](tmp_mgr, msg["payload"])
 
 
-def offset_to_line_and_column (text, offset):
+def offset_to_line_and_column(text, offset):
     offset = max(0, min(len(text), offset))
     text = text[:offset]
-    l = text.count('\n')
-    if l == 0:
-        c = offset
+    line = text.count('\n')
+    if line == 0:
+        column = offset
     else:
-        c = len(text[text.rindex('\n')+1:])
+        column = len(text[text.rindex('\n')+1:])
     # NB: these are zero-based indexes
-    return l, c
+    return line, column
+
 
 async def handle_message_new_text(tmp_mgr, msg):
 
@@ -135,7 +138,7 @@ async def handle_message_new_text(tmp_mgr, msg):
                         msg["prefs"]["extension"], msg["id"])
 
     editor_args = json.loads(msg["prefs"]["editor"])
-    line, column = offset_to_line_and_column (msg["text"], msg["caret"])
+    line, column = offset_to_line_and_column(msg["text"], msg["caret"])
 
     editor_args = get_final_editor_args(editor_args, absfn, line, column)
     try:
