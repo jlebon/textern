@@ -5,14 +5,15 @@
 # Copyright (C) 2018  Oleg Broytman <phd@phdru.name>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import os
-import sys
+import asyncio
 import json
+import os
 import shutil
 import struct
-import asyncio
+import sys
 import tempfile
 import urllib.parse
+
 from inotify_simple.inotify_simple import INotify, flags
 
 
