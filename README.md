@@ -136,6 +136,30 @@ stay in the foreground:
 ["gvim", "-f"]
 ```
 
+## Troubleshooting
+
+Some things to try if it doesn't work properly:
+
+ * Ensure you are running the latest version of Firefox
+ * Try configuring Textern to launch using a different shortcut
+ * Try configuring Textern to use the following as the external editor: `["sh", "-c", "echo foobar > $0"]` (that should just echo foobar into the textarea box)
+ * Check the browser console for errors (Ctrl+Shift+J)
+ * Make sure you cloned the repo with `--recurse-submodules` (see installation instructions above)
+ * Try re-installing but for your local user (`make native-install USER=1` instead of `sudo make native-install`)
+ * Check if Textern is running in the background (`ps aux | grep textern`)
+
+### Firejail
+
+[Firejail](https://firejail.wordpress.com/) is a sandboxing program to restrict what your browser can do. It will prevent Textern from working.
+
+If you install Textern with USER=1, and your firejail instance is not using apparmor, then add to /etc/firejail/firejail.local:
+
+    whitelist ${HOME}/.local/libexec/textern/
+    noblacklist ${PATH}/python3*
+    noblacklist /usr/lib/python3*
+
+If apparmor is enabled, then add the Python lines to firejail.local and see [issue 52](#52).
+
 ## Related Projects
 
 ### It's All Text!
