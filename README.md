@@ -34,23 +34,29 @@ submodules (either use the `--recurse-submodules` when
 running `git clone` as shown above, or use
 `git submodule update --init` if already cloned).
 
-To install the native app, run:
+To install the native app for all user, run:
 
 ```
-$ sudo make native-install
+$ sudo make native-install-system
 ```
 
 To uninstall it, run:
 
 ```
-$ sudo make native-uninstall
+$ sudo make native-uninstall-system
 ```
 
 If you do not have root privileges or wish to only install
 the native app for the current user, run:
 
 ```
-$ make native-install USER=1
+$ make native-install-user
+```
+
+To uninstall it, run:
+
+```
+$ make native-uninstall-user
 ```
 
 ## Usage
