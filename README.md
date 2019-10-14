@@ -46,6 +46,13 @@ To uninstall it, run:
 $ sudo make native-uninstall
 ```
 
+On distros which do not use `/usr/lib64` (such as
+Debian/Ubuntu), you'll want to override `LIBDIR`:
+
+```
+$ sudo make native-install LIBDIR=/usr/lib
+```
+
 If you do not have root privileges or wish to only install
 the native app for the current user, run:
 

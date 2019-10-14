@@ -1,7 +1,8 @@
 ifneq ($(USER),1)
 	PREFIX ?= /usr/local
 	MOZILLA_PREFIX ?= /usr
-	MOZILLA_NATIVE ?= $(MOZILLA_PREFIX)/lib64/mozilla/native-messaging-hosts
+	LIBDIR ?= /usr/lib64
+	MOZILLA_NATIVE ?= $(LIBDIR)/mozilla/native-messaging-hosts
 else
 	PREFIX ?= $(HOME)/.local
 	MOZILLA_NATIVE ?= $(HOME)/.mozilla/native-messaging-hosts
