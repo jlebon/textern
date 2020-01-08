@@ -24,6 +24,8 @@ class TmpManager():
             tmpdir_parent = os.path.join(
                 os.environ['XDG_RUNTIME_DIR'], 'textern')
             os.makedirs(tmpdir_parent)
+        except FileExistsError:
+            pass
         except (KeyError, OSError):
             tmpdir_parent = None
         self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
