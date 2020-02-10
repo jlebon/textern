@@ -64,10 +64,14 @@ $ make native-install USER=1
 
 Once both the WebExtension and the native application are
 installed, you can select any textbox and press Ctrl+Shift+D
-to open an external editor. By default, gedit is opened. You
-can change both the key mapping as well as the configured
-editor in the addon preferences. Additional parameters may
-be passed to the editor. For example:
+to open an external editor. The textarea will flash yellow
+upon launching the text editor, as well as whenever the file
+is saved.
+
+By default, gedit is opened. You can change both the key
+mapping as well as the configured editor in the addon
+preferences. Additional parameters may be passed to the
+editor. For example:
 
 ```
 ["myeditor", "--custom-arg"]
