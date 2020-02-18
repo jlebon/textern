@@ -14,7 +14,11 @@ import sys
 import tempfile
 import urllib.parse
 
-from inotify_simple.inotify_simple import INotify, flags
+try:
+    from inotify_simple import INotify, flags
+except ImportError:
+    # fall-back to the old import pattern for git-submodule use-case (PR#57)
+    from inotify_simple.inotify_simple import INotify, flags
 
 
 class TmpManager():
