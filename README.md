@@ -106,28 +106,16 @@ Here, `xterm` is the terminal emulator, `-e` instructs it to
 start a program, which is `nvim` (the editor we're actually
 interested in) with the given parameters.
 
-This works similarly with `konsole` instead of `xterm`.
-
-#### Notes on gnome-terminal
-
-If you would like to use gnome-terminal to spawn a terminal
-editor like vim or emacs, note that you will need to work
-around the fact that the gnome-terminal process *does not*
-wait for the spawned process before exiting. This will cause
-Textern to stop listening for text updates. See
-https://bugzilla.gnome.org/show_bug.cgi?id=707899#c4 for
-more information. You can work around this by using the
-script
-[here](https://github.com/jlebon/files/blob/master/bin/gnome-terminal-wrapper),
-and prepend your command. For example, to run vim, you can
-set your editor in the preferences to something like
+This works similarly with `konsole` or `gnome-terminal` instead
+of `xterm`. For example, starting `vim` with `gnome-terminal`:
 
 ```
-["gnome-terminal-wrapper", "vim"]
+["gnome-terminal", "--wait", "--", "vim", "+call cursor(%l,%c)"]
 ```
 
-and make sure, that `gnome-terminal-wrapper` is in your
-`PATH`.
+Note that by default the `gnome-terminal` process won't wait for
+the spawned process to finish before exiting so you'll need to
+make sure you add the `--wait` flag.
 
 ### GUI editors
 
