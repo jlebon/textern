@@ -106,22 +106,23 @@ Here, `xterm` is the terminal emulator, `-e` instructs it to
 start a program, which is `nvim` (the editor we're actually
 interested in) with the given parameters.
 
-This works similarly with `konsole` or `gnome-terminal` instead
-of `xterm`. For example, starting `vim` with `gnome-terminal`:
+This works similarly with `konsole` or `gnome-terminal`
+instead of `xterm`. For example, starting `vim` with
+`gnome-terminal`:
 
 ```
 ["gnome-terminal", "--wait", "--", "vim", "+call cursor(%l,%c)"]
 ```
 
-Note that by default the `gnome-terminal` process won't wait for
-the spawned process to finish before exiting so you'll need to
-make sure you add the `--wait` flag.
+Note that by default the `gnome-terminal` process won't wait
+for the spawned process to finish before exiting so you'll
+need to make sure you add the `--wait` flag.
 
 ### GUI editors
 
 Non-terminal-based editors can also suffer from the same
-problem described above. For example, gedit does not fork
-and thus can be used directly:
+waiting problem described above. For example, gedit does not
+fork and thus can be used directly:
 
 ```
 ["gedit"]
