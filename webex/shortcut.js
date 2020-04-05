@@ -202,14 +202,14 @@ shortcut = {
 		};
 		//Attach the function with the event
 
-		ele.addEventListener(opt['type'], func, false);
+		ele.addEventListener(opt['type'], func, true);
 
 		// special-case window: in that case, we want to make sure to attach to
 		// all the nested frames too
 		if (ele === window) {
 			for (i = 0; i < window.frames.length; i++) {
 				try {
-					window.frames[i].addEventListener(opt['type'], func, false);
+					window.frames[i].addEventListener(opt['type'], func, true);
 				} catch(err) {
 					console.log(`Failed to add shortcut on window frame ${i}: ${err}`);
 				}
@@ -227,11 +227,11 @@ shortcut = {
 		var ele = binding['target'];
 		var callback = binding['callback'];
 
-		ele.removeEventListener(type, callback, false);
+		ele.removeEventListener(type, callback, true);
 		if (ele === window) {
 			for (i = 0; i < window.frames.length; i++) {
 				try {
-					window.frames[i].removeEventListener(type, callback, false);
+					window.frames[i].removeEventListener(type, callback, true);
 				} catch(err) {}
 			}
 		}
