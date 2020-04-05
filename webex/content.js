@@ -32,8 +32,8 @@ function watchElement(e) {
     return e.texternId;
 }
 
-function registerText() {
-    var e = document.activeElement;
+function registerText(event) {
+    var e = event.target;
     if (e.nodeName == "TEXTAREA") {
         var id = watchElement(e);
         /* don't use href directly to not bring in e.g. url params */
