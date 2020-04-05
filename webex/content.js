@@ -125,9 +125,9 @@ function onMessage(message, sender, respond) {
 browser.runtime.onMessage.addListener(onMessage);
 
 var currentShortcut = undefined;
-function registerShortcut() {
+function registerShortcut(force) {
     browser.storage.local.get({shortcut: "Ctrl+Shift+D"}).then(val => {
-        if (val.shortcut == currentShortcut)
+        if ((val.shortcut == currentShortcut) && !force)
             return; /* no change */
         if (currentShortcut != undefined)
             shortcut.remove(currentShortcut);
@@ -136,7 +136,9 @@ function registerShortcut() {
     });
 }
 
-registerShortcut();
+registerShortcut(true);
 
 /* meh, we just re-apply the shortcut -- XXX: should check what actually changed */
-browser.storage.onChanged.addListener(registerShortcut);
+browser.storage.onChanged.addListener(function(changes, areaName) {
+    registerShortcut(false);
+});
