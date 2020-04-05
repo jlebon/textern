@@ -14,7 +14,7 @@ shortcut = {
 			'type':'keydown',
 			'propagate':false,
 			'disable_in_input':false,
-			'target':document,
+			'target':window,
 			'keycode':false
 		}
 		if(!opt) opt = default_options;
@@ -203,6 +203,18 @@ shortcut = {
 		//Attach the function with the event
 
 		ele.addEventListener(opt['type'], func, false);
+
+		// special-case window: in that case, we want to make sure to attach to
+		// all the nested frames too
+		if (ele === window) {
+			for (i = 0; i < window.frames.length; i++) {
+				try {
+					window.frames[i].addEventListener(opt['type'], func, false);
+				} catch(err) {
+					console.log(`Failed to add shortcut on window frame ${i}: ${err}`);
+				}
+			}
+		}
 	},
 
 	//Remove the shortcut - just specify the shortcut and I will remove the binding
@@ -216,5 +228,12 @@ shortcut = {
 		var callback = binding['callback'];
 
 		ele.removeEventListener(type, callback, false);
+		if (ele === window) {
+			for (i = 0; i < window.frames.length; i++) {
+				try {
+					window.frames[i].removeEventListener(type, callback, false);
+				} catch(err) {}
+			}
+		}
 	}
 }

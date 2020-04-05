@@ -142,3 +142,13 @@ registerShortcut(true);
 browser.storage.onChanged.addListener(function(changes, areaName) {
     registerShortcut(false);
 });
+
+/* we also want to make sure we re-register whenever the number of iframes changes */
+var lastNumFrames = window.frames.length;
+const observer = new MutationObserver(function() {
+    if (window.frames.length != lastNumFrames) {
+        registerShortcut(true);
+        lastNumFrames = window.frames.length;
+    }
+});
+observer.observe(document, {childList: true, subtree: true});
