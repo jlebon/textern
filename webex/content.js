@@ -129,10 +129,10 @@ function registerShortcut() {
     browser.storage.local.get({shortcut: "Ctrl+Shift+D"}).then(val => {
         if (val.shortcut == currentShortcut)
             return; /* no change */
-        shortcut.add(val.shortcut, registerText);
         if (currentShortcut != undefined)
             shortcut.remove(currentShortcut);
         currentShortcut = val.shortcut;
+        shortcut.add(currentShortcut, registerText);
     });
 }
 
