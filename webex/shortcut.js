@@ -3,6 +3,8 @@
  * Version : 2.01.B
  * By Binny V A
  * License : BSD
+ *
+ * Adapted by Jonathan Lebon <jonathan@jlebon.com>.
  */
 shortcut = {
 	'all_shortcuts':{},//All the shortcuts are stored in this array
@@ -29,8 +31,6 @@ shortcut = {
 
 		//The function to be called at keypress
 		var func = function(e) {
-			e = e || window.event;
-			
 			if(opt['disable_in_input']) { //Don't enable shortcut keys in Input, Textarea fields
 				var element;
 				if(e.target) element=e.target;
@@ -201,9 +201,8 @@ shortcut = {
 			'event': opt['type']
 		};
 		//Attach the function with the event
-		if(ele.addEventListener) ele.addEventListener(opt['type'], func, false);
-		else if(ele.attachEvent) ele.attachEvent('on'+opt['type'], func);
-		else ele['on'+opt['type']] = func;
+
+		ele.addEventListener(opt['type'], func, false);
 	},
 
 	//Remove the shortcut - just specify the shortcut and I will remove the binding
@@ -216,8 +215,6 @@ shortcut = {
 		var ele = binding['target'];
 		var callback = binding['callback'];
 
-		if(ele.detachEvent) ele.detachEvent('on'+type, callback);
-		else if(ele.removeEventListener) ele.removeEventListener(type, callback, false);
-		else ele['on'+type] = false;
+		ele.removeEventListener(type, callback, false);
 	}
 }
