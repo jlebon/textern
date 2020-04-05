@@ -45,6 +45,17 @@ function registerText() {
             caret: e.selectionStart,
             url: simple_url
         }).then(assertNoResponse, logError);
+    } else if ((e.nodeName == "DIV") && e.contentEditable) {
+        var id = watchElement(e);
+        /* don't use href directly to not bring in e.g. url params */
+        var simple_url = window.location.hostname + window.location.pathname
+        browser.runtime.sendMessage("textern@jlebon.com", {
+            type: "register_text",
+            id: id,
+            text: e.innerText,
+            caret: 0,
+            url: simple_url
+        }).then(assertNoResponse, logError);
     } else {
         notifyError("no text field selected");
     }
@@ -57,6 +68,11 @@ function getText(respond) {
         /* don't use href directly to not bring in e.g. url params */
         var simple_url = window.location.hostname + window.location.pathname
         respond({id: id, text: e.value, url: simple_url});
+    } else if ((e.nodeName == "DIV") && e.contentEditable) {
+        var id = watchElement(e);
+        /* don't use href directly to not bring in e.g. url params */
+        var simple_url = window.location.hostname + window.location.pathname
+        respond({id: id, text: e.innerText, url: simple_url});
     }
 }
 
@@ -87,7 +103,11 @@ function fadeBackground(e) {
 
 function setText(id, text) {
     var e = elements.get(id);
-    e.value = text;
+    if (e.nodeName == "TEXTAREA") {
+        e.value = text;
+    } else if ((e.nodeName == "DIV") && e.contentEditable) {
+        e.innerText = text;
+    }
     fadeBackground(e);
 }
 
