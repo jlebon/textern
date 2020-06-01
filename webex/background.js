@@ -79,6 +79,14 @@ function registerDoc(tid, eid, text, caret, url) {
         port.onMessage.addListener((response) => {
             handleNativeMessage(response);
         });
+        port.onDisconnect.addListener((p) => {
+            console.log("Disconnected from helper");
+            if (p.error) {
+                logError(p.error);
+            }
+            activeDocs = [];
+            port = undefined;
+        });
     }
 
     browser.storage.local.get({
