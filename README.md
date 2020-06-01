@@ -154,6 +154,7 @@ Some things to try if it doesn't work properly:
  * Try configuring Textern to launch using a different shortcut
  * Try configuring Textern to use the following as the external editor: `["sh", "-c", "echo foobar > $0"]` (that should just echo foobar into the textarea box)
  * Check the browser console for errors (Ctrl+Shift+J)
+ * Check the extension's console for errors (Go to `about:debugging`, find Textern in the list of extensions, and click Inspect)
  * Make sure you cloned the repo with `--recurse-submodules` (see installation instructions above)
  * Try re-installing but for your local user (`make native-install USER=1` instead of `sudo make native-install`)
  * Check if Textern is running in the background (`ps aux | grep textern`)
