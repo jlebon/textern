@@ -32,6 +32,35 @@ function watchElement(e) {
     return e.texternId;
 }
 
+/* special hack for Slack: https://github.com/jlebon/textern/issues/61 */
+function isSlackMessage(e) {
+    return (window.location.hostname.endsWith(".slack.com") &&
+            e.classList.contains("ql-editor"));
+}
+
+function textFromSlackMessageDiv(e) {
+    /* each line is a different <p> element */
+    var text = "";
+    for (i = 0; i < e.children.length; i++) {
+        if (i > 0) {
+            text += "\n";
+        }
+        text += e.children[i].textContent;
+    }
+    return text;
+}
+
+function textToSlackMessageDiv(text) {
+    var lines = text.split("\n");
+    var html = "";
+    for (i = 0; i < lines.length; i++) {
+        html += "<p>";
+        html += lines[i];
+        html += "</p>";
+    }
+    return html;
+}
+
 function registerText(event) {
     var e = event.target;
     if (e.nodeName == "TEXTAREA") {
@@ -52,7 +81,7 @@ function registerText(event) {
         browser.runtime.sendMessage("textern@jlebon.com", {
             type: "register_text",
             id: id,
-            text: e.innerText,
+            text: isSlackMessage(e) ? textFromSlackMessageDiv(e) : e.innerText,
             caret: 0,
             url: simple_url
         }).then(assertNoResponse, logError);
@@ -91,7 +120,11 @@ function setText(id, text) {
     if (e.nodeName == "TEXTAREA") {
         e.value = text;
     } else if ((e.nodeName == "DIV") && e.contentEditable) {
-        e.innerText = text;
+        if (isSlackMessage(e)) {
+            e.innerHTML = textToSlackMessageDiv(text);
+        } else {
+            e.innerText = text;
+        }
     }
     fadeBackground(e);
 }
