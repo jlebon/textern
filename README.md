@@ -91,6 +91,12 @@ example, passing this information to `gvim` (or `vim`):
 ["gvim", "-f", "+call cursor(%l,%c)"]
 ```
 
+Example for emacs:
+
+```
+["emacs", "%s", "--eval", "(progn (goto-line %l) (move-to-column (1- %c)))"]
+```
+
 ### Terminal editors
 
 If you would like to use a terminal editor such as vim or
