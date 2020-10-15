@@ -145,7 +145,7 @@ stay in the foreground:
 #### Flatpak
 
 Flatpak-packaged editors should work fine, as long as the
-application has access to the XDG_RUNTIME_DIR directory.
+application has access to the `XDG_RUNTIME_DIR` directory.
 For example, to use the GNOME gedit flatpak, use:
 
 ```
