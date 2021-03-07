@@ -20,6 +20,10 @@
              title='Must be an alphanumerical string (excluding leading dot)'>
       <label for="backupdir">Backup files to directory (experimental)</label>
       <input type="text" id="backupdir">
+      <div>Kill editors on exit:
+      <input type="checkbox" id="kill_editors_allow"></div>
+      <label for="kill_editors_timeout">Timeout (in sec.) between retries on killing editors; default 1 sec</label>
+      <input type="text" id="kill_editors_timeout">
       <button type="submit">Save</button><span id="saved"></span>
     </form>
     <script src="options.js" charset="utf-8"></script>
