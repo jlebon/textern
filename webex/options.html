@@ -18,6 +18,10 @@
       <label for="extension">Document extension</label>
       <input type="text" id="extension" required=true pattern="[.a-zA-Z0-9_-]+"
              title='Must be an alphanumerical string (excluding leading dot)'>
+      <label for="kill_editors_allow">Kill editors on exit</label>
+      <input type="checkbox" id="kill_editors_allow">
+      <label for="kill_editors_timeout">Timeout (in sec.) between retries on killing editors; default 1 sec</label>
+      <input type="text" id="kill_editors_timeout">
       <button type="submit">Save</button><span id="saved"></span>
     </form>
     <script src="options.js" charset="utf-8"></script>
