@@ -16,7 +16,8 @@ function saveOptions(e) {
         editor: document.querySelector("#editor").value,
         shortcut: document.querySelector("#shortcut").value,
         extension: document.querySelector("#extension").value,
-        backupdir: document.querySelector("#backupdir").value
+        backupdir: document.querySelector("#backupdir").value,
+        kill_editors_allow: document.querySelector("#kill_editors_allow").checked,
     });
     document.querySelector("#saved").innerHTML = '\u2713';
 }
@@ -42,6 +43,10 @@ function restoreOptions() {
 
     browser.storage.local.get("backupdir").then(result => {
         document.querySelector("#backupdir").value = result.backupdir || "";
+    }, onError);
+
+    browser.storage.local.get("kill_editors_allow").then(result => {
+        document.querySelector("#kill_editors_allow").checked = result.kill_editors_allow || false;
     }, onError);
 }
 
