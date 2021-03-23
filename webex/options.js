@@ -12,10 +12,24 @@ function onError(error) {
 
 function saveOptions(e) {
     e.preventDefault();
+    kill_editors_allow = document.querySelector("#kill_editors_allow").checked;
+    if (kill_editors_allow) {
+        kill_editors_timeout = document.querySelector("#kill_editors_timeout").value;
+        if (kill_editors_timeout.length > 0) {
+            kill_editors_timeout = parseInt(kill_editors_timeout);
+            if isNaN(kill_editors_timeout) {
+                kill_editors_timeout = '';
+            }
+        }
+    } else {
+        kill_editors_timeout = '';
+    }
     browser.storage.local.set({
         editor: document.querySelector("#editor").value,
         shortcut: document.querySelector("#shortcut").value,
-        extension: document.querySelector("#extension").value
+        extension: document.querySelector("#extension").value,
+        kill_editors_allow: kill_editors_allow,
+        kill_editors_timeout: kill_editors_timeout
     });
     document.querySelector("#saved").innerHTML = '\u2713';
 }
@@ -37,6 +51,14 @@ function restoreOptions() {
 
     browser.storage.local.get("extension").then(result => {
         document.querySelector("#extension").value = result.extension || "txt";
+    }, onError);
+
+    browser.storage.local.get("kill_editors_allow").then(result => {
+        document.querySelector("#kill_editors_allow").checked = result.kill_editors_allow || false;
+    }, onError);
+
+    browser.storage.local.get("kill_editors_timeout").then(result => {
+        document.querySelector("#kill_editors_timeout").value = result.kill_editors_timeout || '';
     }, onError);
 }
 

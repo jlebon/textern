@@ -91,7 +91,9 @@ function registerDoc(tid, eid, text, caret, url) {
 
     browser.storage.local.get({
         editor: "[\"gedit\", \"+%l:%c\"]",
-        extension: "txt"
+        extension: "txt",
+        kill_editors_allow: false,
+        kill_editors_timeout: 0
     }).then(values => {
         port.postMessage({
             type: "new_text",
@@ -102,7 +104,9 @@ function registerDoc(tid, eid, text, caret, url) {
                 url: url,
                 prefs: {
                     editor: values.editor,
-                    extension: values.extension
+                    extension: values.extension,
+                    kill_editors_allow: values.kill_editors_allow,
+                    kill_editors_timeout: values.kill_editors_timeout
                 }
             }
         });
