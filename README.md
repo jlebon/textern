@@ -1,3 +1,4 @@
+
 # Textern
 
 Textern is a Firefox add-on that allows you to edit text
@@ -144,12 +145,73 @@ stay in the foreground:
 
 #### Flatpak
 
+##### Flatpak editor
+
 Flatpak-packaged editors should work fine, as long as the
 application has access to the `XDG_RUNTIME_DIR` directory.
 For example, to use the GNOME gedit flatpak, use:
 
 ```
 ["flatpak", "run", "--filesystem=xdg-run/textern", "org.gnome.gedit"]
+```
+
+##### Flatpak Firefox
+
+###### Mozilla Flatpak permissions
+
+If you use [the Firefox
+flatpak](https://flathub.org/apps/details/org.mozilla.firefox), it's possible to
+install and use Textern like this.
+
+Create a file `.local/share/flatpak/overrides/org.mozilla.firefox` with this
+content:
+
+```
+[Context]
+filesystems=xdg-run/textern
+persistent=.local/libexec
+
+[Session Bus Policy]
+org.freedesktop.Flatpak=talk
+```
+
+- `filesystems=xdg-run/textern` is so that the editor on the host can access the temporary files.
+- `persistent=.local/libexec` is so that extensions can access the native application.
+- `org.freedesktop.Flatpak=talk` is so that the flatpak is allowed to run
+  commands on the host system using `flatpak-spawn`.
+
+Alternately set the same settings using the application Flatseal or using the
+corresponding `flatpak override` commands.
+
+###### Install native extension
+
+On host system, in `~/Downloads`, do the checkout:
+
+```bash
+cd ~/Downloads
+git clone --recurse-submodules https://github.com/jlebon/textern
+```
+
+Open shell inside the flatpak:
+
+```bash
+flatpak run --command='bash' org.mozilla.firefox
+```
+
+Run the installation from the checked out repository:
+
+```bash
+cd ~/Downloads/textern
+make native-install USER=1
+```
+
+###### Textern editor command
+
+In the Textern settings, prefix your usual editor command with `"flatpak-spawn",
+"--host"`, for example like this if your editor is also in a Flatpak:
+
+```
+["flatpak-spawn", "--host", "flatpak", "run", "--filesystem=xdg-run/textern", "org.gnome.gedit"]
 ```
 
 ## Troubleshooting
