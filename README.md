@@ -17,7 +17,7 @@ welcome!
 
 To clone the repository:
 
-```
+```sh
 $ git clone --recurse-submodules https://github.com/jlebon/textern
 $ cd textern
 ```
@@ -29,27 +29,27 @@ running `git clone` as shown above, or use
 
 To install the native app, run:
 
-```
+```sh
 $ sudo make native-install
 ```
 
 To uninstall it, run:
 
-```
+```sh
 $ sudo make native-uninstall
 ```
 
 On distros which do not use `/usr/lib64` (such as
 Debian/Ubuntu), you'll want to override `LIBDIR`:
 
-```
+```sh
 $ sudo make native-install LIBDIR=/usr/lib
 ```
 
 If you do not have root privileges or wish to only install
 the native app for the current user, run:
 
-```
+```sh
 $ make native-install USER=1
 ```
 
@@ -66,7 +66,7 @@ mapping as well as the configured editor in the addon
 preferences. Additional parameters may be passed to the
 editor. For example:
 
-```
+```json
 ["myeditor", "--custom-arg"]
 ```
 
@@ -80,13 +80,13 @@ to pass the line and column number of the caret position.
 smaller by one for text editors that count from zero). For
 example, passing this information to `gvim` (or `vim`):
 
-```
+```json
 ["gvim", "-f", "+call cursor(%l,%c)"]
 ```
 
 Example for emacs:
 
-```
+```json
 ["emacs", "%s", "--eval", "(progn (goto-line %l) (move-to-column (1- %c)))"]
 ```
 
@@ -97,7 +97,7 @@ emacs, you will need to modify the configuration such that
 Textern starts a terminal emulator which runs the text
 editor. For example, for `nvim` this could look like
 
-```
+```json
 ["xterm", "-e", "nvim", "+call cursor(%l,%c)"]
 ```
 
@@ -109,7 +109,7 @@ This works similarly with `konsole` or `gnome-terminal`
 instead of `xterm`. For example, starting `vim` with
 `gnome-terminal`:
 
-```
+```json
 ["gnome-terminal", "--wait", "--", "vim", "+call cursor(%l,%c)"]
 ```
 
@@ -117,13 +117,20 @@ Note that by default the `gnome-terminal` process won't wait
 for the spawned process to finish before exiting so you'll
 need to make sure you add the `--wait` flag.
 
+With `konsole`, you may need to ensure it runs in its own process
+with the either the `--separate` or `--nofork` flag:
+
+```json
+["konsole", "--separate", "-e", "vim", "+normal %lG%c|"]
+```
+
 ### GUI editors
 
 Non-terminal-based editors can also suffer from the same
 waiting problem described above. For example, gedit does not
 fork and thus can be used directly:
 
-```
+```json
 ["gedit"]
 ```
 
@@ -131,7 +138,7 @@ On the other hand, `gvim` by default will fork and detach.
 One must thus make sure to pass the `-f` switch for it to
 stay in the foreground:
 
-```
+```json
 ["gvim", "-f"]
 ```
 
@@ -141,7 +148,7 @@ Flatpak-packaged editors should work fine, as long as the
 application has access to the `XDG_RUNTIME_DIR` directory.
 For example, to use the GNOME gedit flatpak, use:
 
-```
+```json
 ["flatpak", "run", "--filesystem=xdg-run/textern", "org.gnome.gedit"]
 ```
 
