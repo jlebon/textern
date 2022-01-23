@@ -1,14 +1,7 @@
 # Textern
 
 Textern is a Firefox add-on that allows you to edit text
-areas in web pages using an external editor. It is similar
-in functionality to the popular
-[It's All Text!](https://addons.mozilla.org/en-US/firefox/addon/its-all-text/)
-add-on, though makes use of the WebExtension API and is thus
-fully compatible with
-[multiprocessing](https://wiki.mozilla.org/Electrolysis) and
-planned to be supported beyond
-[Firefox 57](https://blog.mozilla.org/addons/2017/02/16/the-road-to-firefox-57-compatibility-milestones/).
+areas in web pages using an external editor.
 
 The add-on is divided into two parts:
 
