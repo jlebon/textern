@@ -13,6 +13,7 @@ import struct
 import sys
 import tempfile
 import urllib.parse
+from datetime import datetime
 
 try:
     from inotify_simple import INotify, flags
@@ -34,6 +35,13 @@ class TmpManager():
             tmpdir_parent = None
         self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
+        try:
+            self.backupdir = os.path.join(os.environ['HOME'], '.textern')
+            os.makedirs(self.backupdir)
+        except FileExistsError:
+            pass
+        except (KeyError, OSError):
+            self.backupdir = None
 
     def __enter__(self):
         return self
@@ -43,6 +51,16 @@ class TmpManager():
 
     def __contains__(self, relfn):
         return relfn in self._tmpfiles
+
+    def backup(self):
+        if self.backupdir is None:
+            return
+        try:
+            backup = os.path.join(self.backupdir,
+                                  str(datetime.now().timestamp()))
+            shutil.copytree(self.tmpdir, backup)
+        except shutil.Error:
+            pass
 
     def new(self, text, url, extension, opaque):
         sanitized_url = urllib.parse.quote(url, safe='')
@@ -162,6 +180,7 @@ async def handle_message_new_text(tmp_mgr, msg):
             send_error("editor '%s' did not exit successfully"
                        % editor_args[0])
     finally:
+        tmp_mgr.backup()
         send_death_notice(msg["id"])
         tmp_mgr.delete(absfn)
 
