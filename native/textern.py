@@ -30,11 +30,11 @@ class TmpManager():
         try:
             tmpdir_parent = os.path.join(
                 os.environ['XDG_RUNTIME_DIR'], 'textern')
-            os.makedirs(tmpdir_parent)
-        except FileExistsError:
-            pass
-        except (KeyError, OSError):
-            tmpdir_parent = None
+        except KeyError:
+            uid = os.getuid()
+            tmpdir_parent = f'/run/textern-{uid}'
+            os.makedirs(tmpdir_parent, exist_ok=True)
+            os.chmod(tmpdir_parent, 0o700)
         self.tmpdir = tempfile.mkdtemp(prefix=tmpd_prefix, dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
 
