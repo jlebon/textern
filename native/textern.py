@@ -13,6 +13,7 @@ import struct
 import sys
 import tempfile
 import urllib.parse
+import datetime
 
 try:
     from inotify_simple import INotify, flags
@@ -24,6 +25,8 @@ except ImportError:
 class TmpManager():
 
     def __init__(self):
+        now = datetime.datetime.now()
+        tmpd_prefix = now.strftime('textern-%Y-%m-%d-%H%M%S-')
         try:
             tmpdir_parent = os.path.join(
                 os.environ['XDG_RUNTIME_DIR'], 'textern')
@@ -32,7 +35,7 @@ class TmpManager():
             pass
         except (KeyError, OSError):
             tmpdir_parent = None
-        self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
+        self.tmpdir = tempfile.mkdtemp(prefix=tmpd_prefix, dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
 
     def __enter__(self):
