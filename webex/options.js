@@ -15,7 +15,8 @@ function saveOptions(e) {
     browser.storage.local.set({
         editor: document.querySelector("#editor").value,
         shortcut: document.querySelector("#shortcut").value,
-        extension: document.querySelector("#extension").value
+        extension: document.querySelector("#extension").value,
+        backupdir: document.querySelector("#backupdir").value
     });
     document.querySelector("#saved").innerHTML = '\u2713';
 }
@@ -37,6 +38,10 @@ function restoreOptions() {
 
     browser.storage.local.get("extension").then(result => {
         document.querySelector("#extension").value = result.extension || "txt";
+    }, onError);
+
+    browser.storage.local.get("backupdir").then(result => {
+        document.querySelector("#backupdir").value = result.backupdir || "";
     }, onError);
 }
 
