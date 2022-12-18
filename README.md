@@ -152,6 +152,19 @@ For example, to use the GNOME gedit flatpak, use:
 ["flatpak", "run", "--filesystem=xdg-run/textern", "org.gnome.gedit"]
 ```
 
+### Enabling backups
+
+Textern has experimental support for backing up text to a
+separate location to allow recovering data inadvertently
+lost by closing a tab or Firefox too soon. To enable this
+feature, enter a path to the backup directory in the addon
+preferences page. Note no shell expansion is performed on
+the path (use e.g. `/home/jlebon` instead of `~`).
+
+Files older than 24 hours are deleted from the backup
+directory. Note this feature is experimental and subject to
+change.
+
 ## Troubleshooting
 
 Some things to try if it doesn't work properly:

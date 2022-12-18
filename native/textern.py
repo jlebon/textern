@@ -13,12 +13,16 @@ import struct
 import sys
 import tempfile
 import urllib.parse
+import time
 
 try:
     from inotify_simple import INotify, flags
 except ImportError:
     # fall-back to the old import pattern for git-submodule use-case (PR#57)
     from inotify_simple.inotify_simple import INotify, flags
+
+
+BACKUP_RETENTION_SECS = 24 * 60 * 60
 
 
 class TmpManager():
@@ -32,6 +36,7 @@ class TmpManager():
             pass
         except (KeyError, OSError):
             tmpdir_parent = None
+        self._backupdir = ""
         self.tmpdir = tempfile.mkdtemp(prefix="textern-", dir=tmpdir_parent)
         self._tmpfiles = {}  # relfn --> opaque
 
@@ -43,6 +48,19 @@ class TmpManager():
 
     def __contains__(self, relfn):
         return relfn in self._tmpfiles
+
+    def update_backupdir(self, val):
+        self._backupdir = val
+        if self._backupdir != "":
+            os.makedirs(self._backupdir, exist_ok=True)
+            now = time.time()
+            for path in os.listdir(self._backupdir):
+                fn = os.path.join(self._backupdir, path)
+                if not os.path.isfile(fn):
+                    continue
+                stbuf = os.stat(fn)
+                if now - stbuf.st_mtime > BACKUP_RETENTION_SECS:
+                    os.unlink(fn)
 
     def new(self, text, url, extension, opaque):
         sanitized_url = urllib.parse.quote(url, safe='')
@@ -64,6 +82,14 @@ class TmpManager():
         assert relfn in self._tmpfiles
         self._tmpfiles.pop(relfn)
         os.unlink(absfn)
+
+    def backup(self, relfn):
+        if self._backupdir == "":
+            return
+        assert relfn in self._tmpfiles
+        absfn = os.path.join(self.tmpdir, relfn)
+        if os.stat(absfn).st_size > 0:
+            shutil.copyfile(absfn, os.path.join(self._backupdir, relfn))
 
     def get(self, relfn):
         assert relfn in self._tmpfiles
@@ -144,7 +170,11 @@ async def handle_message_new_text(tmp_mgr, msg):
     absfn = tmp_mgr.new(msg["text"], msg["url"],
                         msg["prefs"]["extension"], msg["id"])
 
+    # for now, we get preferences as part of new_text updates; in the future, we
+    # may add a `set_prefs` message dedicated to this
+    tmp_mgr.update_backupdir(msg["prefs"].get("backupdir", ""))
     editor_args = json.loads(msg["prefs"]["editor"])
+
     line, column = offset_to_line_and_column(msg["text"], msg["caret"])
 
     editor_args = get_final_editor_args(editor_args, absfn, line, column)
@@ -179,6 +209,7 @@ def handle_inotify_event(ino, tmp_mgr):
         if event.name in tmp_mgr:
             text, id = tmp_mgr.get(event.name)
             send_text_update(id, text)
+            tmp_mgr.backup(event.name)
 
 
 def send_text_update(id, text):
