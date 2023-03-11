@@ -98,13 +98,21 @@ function registerText(event) {
     } else if ((e.nodeName == "DIV") && e.contentEditable) {
         var id = watchElement(e);
         /* don't use href directly to not bring in e.g. url params */
-        var simple_url = window.location.hostname + window.location.pathname
+        var simple_url = window.location.hostname + window.location.pathname;
+        var text = "";
+        if (isSlackMessage(e)) {
+            text = textFromSlackMessageDiv(e);
+        } else if (isGmailMessageBody(e)) {
+            // we use GMail's innerText b/c it has simple (non-HTML) output.
+            // using innerHTML would correctly capture spacing, but also brings other junk.
+            text = gmailInnerTextToText(e.innerText);
+        } else {
+            text = e.innerText;
+        }
         browser.runtime.sendMessage("textern@jlebon.com", {
             type: "register_text",
             id: id,
-            // we use GMail's innerText b/c it has simple (non-HTML) output.
-            // using innerHTML would correctly capture spacing, but also brings other junk.
-            text: isSlackMessage(e) ? textFromSlackMessageDiv(e) : isGmailMessageBody(e) ? gmailInnerTextToText(e.innerText) : e.innerText,
+            text: text,
             caret: 0,
             url: simple_url
         }).then(assertNoResponse, logError);
