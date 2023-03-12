@@ -119,6 +119,8 @@ function setText(id, text) {
     var e = elements.get(id);
     if (e.nodeName == "TEXTAREA") {
         e.value = text;
+        /* send input event to make website (p.e. tiddlywiki.com) aware of updated text */
+        e.dispatchEvent(new Event('input', {}));
     } else if ((e.nodeName == "DIV") && e.contentEditable) {
         if (isSlackMessage(e)) {
             e.innerHTML = textToSlackMessageDiv(text);
