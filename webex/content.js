@@ -32,34 +32,41 @@ function watchElement(e) {
     return e.texternId;
 }
 
+// Check if this is a GMail message body
+function isGmailMessageBody(e) {
+    return e.baseURI.startsWith("https://mail.google") &&
+        e.attributes["aria-label"].textContent == "Message Body";
+}
+
+function gmailGetText(e) {
+    return e.innerText
+        // non-breakable space to space
+        .replaceAll("\u00A0", " ")
+        // innerText gets confused by <div><br></div> for empty newlines
+        // resulting in two newlines. undo that.
+        .replaceAll("\n\n", "\n");
+}
+
+function gmailSetText(e, text) {
+    e.innerHTML = "";
+    var lines = text.split("\n");
+    for (i = 0; i < lines.length; i++) {
+        var div = document.createElement('div');
+        div.textContent = lines[i].replaceAll(" ", "\u00A0");
+        if (lines[i].trim().length == 0) {
+            div.appendChild(document.createElement('br'));
+        }
+        e.appendChild(div);
+    }
+}
+
 /* special hack for Slack: https://github.com/jlebon/textern/issues/61 */
 function isSlackMessage(e) {
     return (window.location.hostname.endsWith(".slack.com") &&
             e.classList.contains("ql-editor"));
 }
 
-// Check if this is a GMail message body
-//
-// innerText doesn't work well for GMail, so we use innerHTML instead.
-function isGmailMessageBody(e) {
-    return e.baseURI.startsWith("https://mail.google") &&
-        e.attributes["aria-label"].textContent == "Message Body";
-}
-
-function textToGmailHtml(string) {
-    return string
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll(" ", "&nbsp;")
-        .replaceAll("\n", "<br>");
-}
-
-function gmailInnerTextToText(string) {
-    return string
-        .replaceAll("\u00A0", " ");
-}
-
-function textFromSlackMessageDiv(e) {
+function slackGetText(e) {
     /* each line is a different <p> element */
     var text = "";
     for (i = 0; i < e.children.length; i++) {
@@ -71,15 +78,17 @@ function textFromSlackMessageDiv(e) {
     return text;
 }
 
-function textToSlackMessageDiv(text) {
+function slackSetText(e, text) {
+    e.innerHTML = "";
     var lines = text.split("\n");
-    var html = "";
     for (i = 0; i < lines.length; i++) {
-        html += "<p>";
-        html += lines[i];
-        html += "</p>";
+        var p = document.createElement('p');
+        p.textContent = lines[i];
+        if (lines[i].length == 0) {
+            p.appendChild(document.createElement('br'));
+        }
+        e.appendChild(p);
     }
-    return html;
 }
 
 function registerText(event) {
@@ -101,11 +110,9 @@ function registerText(event) {
         var simple_url = window.location.hostname + window.location.pathname;
         var text = "";
         if (isSlackMessage(e)) {
-            text = textFromSlackMessageDiv(e);
+            text = slackGetText(e);
         } else if (isGmailMessageBody(e)) {
-            // we use GMail's innerText b/c it has simple (non-HTML) output.
-            // using innerHTML would correctly capture spacing, but also brings other junk.
-            text = gmailInnerTextToText(e.innerText);
+            text = gmailGetText(e);
         } else {
             text = e.innerText;
         }
@@ -154,12 +161,9 @@ function setText(id, text) {
         e.dispatchEvent(new Event('input', {}));
     } else if ((e.nodeName == "DIV") && e.contentEditable) {
         if (isSlackMessage(e)) {
-            e.innerHTML = textToSlackMessageDiv(text);
+            slackSetText(e, text);
         } else if (isGmailMessageBody(e)) {
-            // We want GMail to accurately render the text's spacing.
-            // Setting innerText does not do that, so we convert the spacing to equivalent
-            // HTML.
-            e.innerHTML = textToGmailHtml(text);
+            gmailSetText(e, text);
         } else {
             e.innerText = text;
         }
