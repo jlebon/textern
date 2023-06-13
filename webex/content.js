@@ -17,7 +17,7 @@ function assertNoResponse(response) {
 }
 
 function notifyError(error) {
-    browser.notifications.create({
+    browser.notifications?.create({
         type: "basic",
         title: "Textern",
         message: "Error: " + error + "."
@@ -91,8 +91,7 @@ function slackSetText(e, text) {
     }
 }
 
-function registerText(event) {
-    var e = event.target;
+function registerText(e) {
     if (e.nodeName == "TEXTAREA") {
         var id = watchElement(e);
         /* don't use href directly to not bring in e.g. url params */
@@ -171,10 +170,33 @@ function setText(id, text) {
     fadeBackground(e);
 }
 
+function getActiveElement(element = document.activeElement) {
+    if (element.nodeName === 'IFRAME' || element.nodeName === 'FRAME')
+        return null; // skip to allow child documents to handle shortcut
+
+    const shadowRoot = element.shadowRoot
+    const contentDocument = element.contentDocument
+
+    if (shadowRoot && shadowRoot.activeElement) {
+        return getActiveElement(shadowRoot.activeElement)
+    }
+
+    if (contentDocument && contentDocument.activeElement) {
+        return getActiveElement(contentDocument.activeElement)
+    }
+
+    return element
+}
+
 function onMessage(message, sender, respond) {
     if (sender.id != "textern@jlebon.com")
         return;
-    if (message.type == "set_text")
+    if (message.type == 'shortcut') {
+        const activeElement = getActiveElement();
+        if (activeElement)
+            registerText(activeElement);
+    }
+    else if (message.type == "set_text")
         setText(message.id, message.text);
     else {
         console.log(`Unknown message type: ${message.type}`);
@@ -182,32 +204,3 @@ function onMessage(message, sender, respond) {
 }
 
 browser.runtime.onMessage.addListener(onMessage);
-
-var currentShortcut = undefined;
-function registerShortcut(force) {
-    browser.storage.local.get({shortcut: "Ctrl+Shift+D"}).then(val => {
-        if ((val.shortcut == currentShortcut) && !force)
-            return; /* no change */
-        if (currentShortcut != undefined)
-            shortcut.remove(currentShortcut);
-        currentShortcut = val.shortcut;
-        shortcut.add(currentShortcut, registerText);
-    });
-}
-
-registerShortcut(true);
-
-/* meh, we just re-apply the shortcut -- XXX: should check what actually changed */
-browser.storage.onChanged.addListener(function(changes, areaName) {
-    registerShortcut(false);
-});
-
-/* we also want to make sure we re-register whenever the number of iframes changes */
-var lastNumFrames = window.frames.length;
-const observer = new MutationObserver(function() {
-    if (window.frames.length != lastNumFrames) {
-        registerShortcut(true);
-        lastNumFrames = window.frames.length;
-    }
-});
-observer.observe(document, {childList: true, subtree: true});

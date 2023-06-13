@@ -3,7 +3,7 @@
   "description": "Edit text in your favourite external editor!",
   "homepage_url": "https://github.com/jlebon/textern",
   "manifest_version": 2,
-  "version": "0.8",
+  "version": "0.9b1",
 
   "browser_specific_settings": {
     "gecko": {
@@ -17,15 +17,32 @@
   },
 
   "content_scripts": [
-      {
-          "matches": ["<all_urls>"],
-          "js": ["shortcut.js", "content.js"]
-      }
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "content.js"
+      ],
+      "all_frames": true
+    }
   ],
+
+  "commands": {
+    "textern": {
+      "suggested_key": {
+        "default": "Shift+Alt+D"
+      },
+      "description": "Edit externally"
+    }
+  },
 
   "options_ui": {
       "page": "options.html"
   },
 
-  "permissions": ["notifications", "nativeMessaging", "storage"]
+  "permissions": [
+    "tabs",
+    "notifications",
+    "nativeMessaging",
+    "storage"
+  ]
 }
