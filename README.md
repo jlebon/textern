@@ -81,7 +81,7 @@ smaller by one for text editors that count from zero). For
 example, passing this information to `gvim` (or `vim`):
 
 ```json
-["gvim", "-f", "+call cursor(%l,%c)"]
+["gvim", "-f", "+set nofixeol", "+call setcursorcharpos(%l, %c)"]
 ```
 
 Example for emacs:
@@ -98,7 +98,7 @@ Textern starts a terminal emulator which runs the text
 editor. For example, for `nvim` this could look like
 
 ```json
-["xterm", "-e", "nvim", "+call cursor(%l,%c)"]
+["xterm", "-e", "nvim", "+set nofixeol", "+call setcursorcharpos(%l, %c)"]
 ```
 
 Here, `xterm` is the terminal emulator, `-e` instructs it to
@@ -110,18 +110,17 @@ instead of `xterm`. For example, starting `vim` with
 `gnome-terminal`:
 
 ```json
-["gnome-terminal", "--wait", "--", "vim", "+call cursor(%l,%c)"]
+["gnome-terminal", "--wait", "--", "vim", "+set nofixeol", "+call setcursorcharpos(%l, %c)"]
 ```
 
 Note that by default the `gnome-terminal` process won't wait
 for the spawned process to finish before exiting so you'll
 need to make sure you add the `--wait` flag.
 
-With `konsole`, you may need to ensure it runs in its own process
-with the either the `--separate` or `--nofork` flag:
+With `konsole`, use the `--separate` flag (alias `--nofork`):
 
 ```json
-["konsole", "--separate", "-e", "vim", "+normal %lG%c|"]
+["konsole", "--separate", "-e", "vim", "+set nofixeol", "+call setcursorcharpos(%l, %c)"]
 ```
 
 ### GUI editors
