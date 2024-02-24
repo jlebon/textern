@@ -26,11 +26,10 @@ native/textern.json:
 
 .PHONY: native-install
 native-install: native/textern.json
-	@if ! test -f native/inotify_simple/.git; then echo "Missing inotify_simple submodule! Try 'git submodule update --init'."; false; fi
 	mkdir -p $(DESTDIR)$(MOZILLA_NATIVE)
 	cp -f native/textern.json $(DESTDIR)$(MOZILLA_NATIVE)
 	mkdir -p $(DESTDIR)$(LIBEXEC)/textern
-	cp -rf native/textern.py native/inotify_simple $(DESTDIR)$(LIBEXEC)/textern
+	cp -rf native/textern.py $(DESTDIR)$(LIBEXEC)/textern
 
 .PHONY: native-uninstall
 native-uninstall:
