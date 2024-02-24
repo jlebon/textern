@@ -15,12 +15,8 @@ import tempfile
 import time
 import urllib.parse
 
-try:
-    from inotify_simple import INotify, flags
-except ImportError:
-    # fall-back to the old import pattern for git-submodule use-case (PR#57)
-    from inotify_simple.inotify_simple import INotify, flags
-
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 BACKUP_RETENTION_SECS = 24 * 60 * 60
 
@@ -97,14 +93,28 @@ class TmpManager():
             return f.read(), self._tmpfiles[relfn]
 
 
+class CloseEventHandler(FileSystemEventHandler):
+    def __init__(self, tmp_mgr):
+        super(CloseEventHandler, self).__init__()
+        self.tmp_mgr = tmp_mgr
+
+    def on_closed(self, event):
+        super(CloseEventHandler, self).on_closed(event)
+        handle_close_event(os.path.basename(event.src_path), self.tmp_mgr)
+
+
 def main():
-    with INotify() as ino, TmpManager() as tmp_mgr:
-        ino.add_watch(tmp_mgr.tmpdir, flags.CLOSE_WRITE)
+    with TmpManager() as tmp_mgr:
+        event_handler = CloseEventHandler(tmp_mgr)
+        observer = Observer()
+        observer.schedule(event_handler, tmp_mgr.tmpdir)
+        observer.start()
         loop = asyncio.get_event_loop()
         loop.add_reader(sys.stdin.buffer, handle_stdin, tmp_mgr)
-        loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
         loop.run_forever()
         loop.close()
+    observer.stop()
+    observer.join()
 
 
 def handle_stdin(tmp_mgr):
@@ -201,15 +211,14 @@ message_handlers = {
 }
 
 
-def handle_inotify_event(ino, tmp_mgr):
-    for event in ino.read():
-        # this check is relevant in the case where we're handling the inotify
-        # event caused by tmp_mgr.new(), but then an exception occurred in
-        # handle_message() which caused the tmpfile to already be deleted
-        if event.name in tmp_mgr:
-            text, id = tmp_mgr.get(event.name)
-            send_text_update(id, text)
-            tmp_mgr.backup(event.name)
+def handle_close_event(relfn, tmp_mgr):
+    # this check is relevant in the case where we're handling the inotify
+    # event caused by tmp_mgr.new(), but then an exception occurred in
+    # handle_message() which caused the tmpfile to already be deleted
+    if relfn in tmp_mgr:
+        text, id = tmp_mgr.get(relfn)
+        send_text_update(id, text)
+        tmp_mgr.backup(relfn)
 
 
 def send_text_update(id, text):
