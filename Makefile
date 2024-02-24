@@ -9,6 +9,7 @@ else
 endif
 
 LIBEXEC ?= $(PREFIX)/libexec
+PYTHON ?= python3
 
 .PHONY: all
 all:
@@ -29,7 +30,11 @@ native-install: native/textern.json
 	mkdir -p $(DESTDIR)$(MOZILLA_NATIVE)
 	cp -f native/textern.json $(DESTDIR)$(MOZILLA_NATIVE)
 	mkdir -p $(DESTDIR)$(LIBEXEC)/textern
-	cp -rf native/textern.py $(DESTDIR)$(LIBEXEC)/textern
+	$(PYTHON) -m venv $(DESTDIR)$(LIBEXEC)/textern/venv
+	$(DESTDIR)$(LIBEXEC)/textern/venv/bin/python -m pip install watchdog
+	sed "s@#!/usr/bin/env python3@#!$(DESTDIR)$(LIBEXEC)/textern/venv/bin/python@" \
+		< native/textern.py > $(DESTDIR)$(LIBEXEC)/textern/textern.py
+	chmod a+x $(DESTDIR)$(LIBEXEC)/textern/textern.py
 
 .PHONY: native-uninstall
 native-uninstall:
