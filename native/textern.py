@@ -12,8 +12,8 @@ import shutil
 import struct
 import sys
 import tempfile
-import urllib.parse
 import time
+import urllib.parse
 
 try:
     from inotify_simple import INotify, flags
