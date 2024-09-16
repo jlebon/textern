@@ -1,3 +1,0 @@
-[submodule "native/inotify_simple"]
-	path = native/inotify_simple
-	url = https://github.com/chrisjbillington/inotify_simple
