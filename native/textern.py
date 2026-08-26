@@ -98,13 +98,17 @@ class TmpManager():
 
 
 def main():
-    with INotify() as ino, TmpManager() as tmp_mgr:
-        ino.add_watch(tmp_mgr.tmpdir, flags.CLOSE_WRITE)
-        loop = asyncio.get_event_loop()
-        loop.add_reader(sys.stdin.buffer, handle_stdin, tmp_mgr)
-        loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
-        loop.run_forever()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        with INotify() as ino, TmpManager() as tmp_mgr:
+            ino.add_watch(tmp_mgr.tmpdir, flags.CLOSE_WRITE)
+            loop.add_reader(sys.stdin.buffer, handle_stdin, tmp_mgr)
+            loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
+            loop.run_forever()
+    finally:
         loop.close()
+        asyncio.set_event_loop(None)
 
 
 def handle_stdin(tmp_mgr):
@@ -113,7 +117,7 @@ def handle_stdin(tmp_mgr):
     # reading in a separate thread. In practice, we're trusting that we're
     # talking with Firefox and that readiness implies a full message (length +
     # content) is ready to be read.
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     raw_length = sys.stdin.buffer.read(4)
     if len(raw_length) == 0:
         loop.stop()
