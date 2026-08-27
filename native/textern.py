@@ -100,7 +100,17 @@ class TmpManager():
 def main():
     with INotify() as ino, TmpManager() as tmp_mgr:
         ino.add_watch(tmp_mgr.tmpdir, flags.CLOSE_WRITE)
+
+        if sys.version >= "3.14":
+            """
+            In Python 3.14 asyncio.get_event_loop() no longer creates a new
+            event loop automatically if one doesn't exist
+            """
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         loop = asyncio.get_event_loop()
+
         loop.add_reader(sys.stdin.buffer, handle_stdin, tmp_mgr)
         loop.add_reader(ino.fd, handle_inotify_event, ino, tmp_mgr)
         loop.run_forever()
