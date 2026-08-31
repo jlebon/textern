@@ -14,7 +14,6 @@ function saveOptions(e) {
     e.preventDefault();
     browser.storage.local.set({
         editor: document.querySelector("#editor").value,
-        shortcut: document.querySelector("#shortcut").value,
         extension: document.querySelector("#extension").value,
         backupdir: document.querySelector("#backupdir").value
     });
@@ -30,10 +29,6 @@ function restoreOptions() {
     browser.storage.local.get("editor").then(result => {
         document.querySelector("#editor").value =
             result.editor || "[\"gedit\", \"+%l:%c\"]";
-    }, onError);
-
-    browser.storage.local.get("shortcut").then(result => {
-        document.querySelector("#shortcut").value = result.shortcut || "Ctrl+Shift+D";
     }, onError);
 
     browser.storage.local.get("extension").then(result => {
