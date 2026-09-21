@@ -19,7 +19,7 @@ function assertNoResponse(response) {
 }
 
 function notifyError(error) {
-    browser.notifications.create({
+    browser.notifications?.create({
         type: "basic",
         title: "Textern",
         message: "Error: " + error + "."
@@ -126,3 +126,16 @@ function onMessage(message, sender, respond) {
 }
 
 browser.runtime.onMessage.addListener(onMessage);
+
+browser.commands.onCommand.addListener(function(command) {
+    if (command === 'textern') {
+        browser.tabs.query({
+            currentWindow: true,
+            active: true
+        }).then(function(tabs) {
+            if (tabs?.length && tabs[0].id != browser.tabs.TAB_ID_NONE) {
+                browser.tabs.sendMessage(tabs[0].id, {type: 'shortcut'}).then(assertNoResponse, logError);
+            }
+        });
+    }
+});
